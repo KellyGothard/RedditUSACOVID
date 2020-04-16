@@ -17,4 +17,4 @@ By analyzing comments from each US state’s associated subreddit, andsubreddits
 
 ### Google COVID-19 Mobility Reports
 
-Scraped from PDFs and in CSV format, sourced from [this project.](https://github.com/vitorbaptista/google-covid19-mobility-reports)
+Scraped from PDF reports and converted to CSV format; sourced from [this project.](https://github.com/vitorbaptista/google-covid19-mobility-reports)
