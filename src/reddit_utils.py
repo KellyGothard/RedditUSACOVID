@@ -175,6 +175,22 @@ def get_states_for_cities():
 
     return city_to_state
 
+def get_list_of_cities():
+    cities = ['NYC', 'Seattle', 'Chicago', 'LosAngeles', 'Portland', 'Boston', 'Austin', 'SanFrancisco', 'WashingtonDC',
+              'Houston', 'Atlanta', 'Philadelphia', 'Denver', 'SanDiego', 'Dallas', 'Pittsburgh', 'Baltimore',
+              'StLouis']
+
+    return cities
+
+def get_list_of_states():
+    states = ['texas', 'california', 'newjersey', 'michigan', 'minnesota', 'colorado', 'wisconsin', 'florida',
+              'connecticut', 'oregon', 'ohio', 'hawaii', 'northcarolina', 'oklahoma', 'maryland', 'arizona', 'virginia',
+              'maine', 'indiana', 'iowa', 'washington', 'newhampshire', 'alaska', 'louisiana', 'massachusetts',
+              'vermont', 'newyork', 'arkansas', 'pennsylvania', 'alabama', 'kentucky', 'southcarolina', 'georgia',
+              'montana', 'delaware', 'utah', 'rhodeisland', 'missouri', 'tennessee', 'nebraska', 'illinois',
+              'westvirginia', 'newmexico', 'mississippi', 'kansas', 'northdakota', 'idaho', 'southdakota', 'wyoming',
+              'nevada']
+    return states
 
 ########################################################################
 
@@ -182,7 +198,7 @@ def get_states_for_cities():
 # Example usages (Uncomment and run to test them, don't forget to recomment):
 
 # # Read in data
-# stlouis_comments = pd.read_csv('reddit_data/cities/StLouis/StLouis.csv', nrows = 1000)
+# stlouis_comments = pd.read_csv('reddit_data/cities/StLouis/StLouis_comments.csv', nrows = 1000)
 # # Get count and rank of all words in df
 # stlouis_comments_ranked = rank(stlouis_comments, count_col = 'body')
 # print(stlouis_comments_ranked.head())
@@ -194,7 +210,7 @@ def get_states_for_cities():
 # print(stlouis_posts_ranked.head())
 
 # # Read in data
-# stlouis_comments = pd.read_csv('reddit_data/cities/StLouis/StLouis.csv', nrows = 1000)
+# stlouis_comments = pd.read_csv('reddit_data/cities/StLouis/StLouis_comments.csv', nrows = 1000)
 # # Get datetimes for month, day, hour
 # stlouis_comments_with_dates = utc_to_datetime(stlouis_comments, 'created_utc')
 # print(stlouis_comments_with_dates[['datetime','month','day','author']].head())
