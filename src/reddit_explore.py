@@ -7,115 +7,104 @@ from matplotlib import rc
 import matplotlib.dates as mdates
 from datetime import timedelta
 
-STATES_PATH = '../data/reddit_data/states/'
-CITIES_PATH = '../data/reddit_data/cities/'
-SUMMARY_DATA_PATH = '../data/reddit_data/reddit_data_summaries.csv'
-cities = reddit_utils.get_list_of_cities()
-states = reddit_utils.get_list_of_states()
 
-data = []
+def summary_barh(df, iscity, col, title, out):
+    '''
+    Function to take in a dataframe, a column, title, and out directory
+    to plot a horizontal bar chart by 'location'.  Meant to be used with
+    summary file ('../data/reddit_data/reddit_data_summaries.csv').
+    '''
+    # Is it a city or a state?
+    if iscity == True:
+        data = df[df['city?'] == 1]
+        rc('font', **{'family': 'serif', 'serif': ['Computer Modern'], 'size': 18})
+    else:
+        data = df[df['city?'] == 0]
+        rc('font', **{'family': 'serif', 'serif': ['Computer Modern'], 'size': 12})
+    rc('text', usetex=True)
 
-# for city in cities:
-#     print(city)
-#
-#     comments_path = CITIES_PATH+'/'+city+'/'+city+'_comments.csv'
-#     comments_df = pd.read_csv(comments_path)
-#     n_comments = len(comments_df)
-#     n_comment_authors = len(comments_df.author.unique())
-#
-#     posts_path = CITIES_PATH+'/'+city+'/'+city+'_posts.csv'
-#     posts_df = pd.read_csv(posts_path)
-#     n_posts = len(posts_df)
-#     n_post_authors = len(posts_df.author.unique())
-#
-#     ifcity = 1
-#
-#     city_data = [city, ifcity, n_comments, n_comment_authors, n_posts, n_post_authors]
-#     data.append(city_data)
-#
-# for state in states:
-#     print(state)
-#
-#     comments_path = STATES_PATH+'/'+state+'/'+state+'_comments.csv'
-#     comments_df = pd.read_csv(comments_path)
-#     n_comments = len(comments_df)
-#     n_comment_authors = len(comments_df.author.unique())
-#
-#     posts_path = STATES_PATH+'/'+state+'/'+state+'_posts.csv'
-#     posts_df = pd.read_csv(posts_path)
-#     n_posts = len(posts_df)
-#     n_post_authors = len(posts_df.author.unique())
-#
-#     ifcity = 0
-#
-#     state_data = [state, ifcity, n_comments, n_comment_authors, n_posts, n_post_authors]
-#     data.append(state_data)
-#
-# summary_data = pd.DataFrame(data, columns = ['location', 'city?', 'n_comments', 'n_comment_authors', 'n_posts', 'n_post_authors'])
-# print(summary_data.head())
-# summary_data.to_csv(SUMMARY_DATA_PATH)
+    data = data.sort_values('n_comments',ascending=True)
+    fig = plt.figure(figsize=(6, 8))
+    fig.subplots_adjust(left=0.3)
+    ax = fig.add_subplot(111)
+    ax.barh(y = data['location'], width = data[col])
+    ax.grid()
+    plt.title(title)
+    plt.savefig(out)
+    plt.show()
+    plt.close()
 
 
-summary_data = pd.read_csv(SUMMARY_DATA_PATH)
-cities_data = summary_data[summary_data['city?']==1]
-cities_data = cities_data.sort_values('n_comments',ascending=True)
-rc('font', **{'family': 'serif', 'serif': ['Computer Modern'], 'size': 18})
-rc('text', usetex=True)
+def main():
 
-fig = plt.figure(figsize=(6, 8))
-fig.subplots_adjust(left=0.3)
-ax = fig.add_subplot(111)
-ax.barh(y = cities_data['location'], width = cities_data['n_comments'])
-ax.set_xticks([0,50000,100000,150000,200000,250000])
-ax.set_xticklabels(['0','50K','100K','150K','200K','250K'])
-ax.grid()
-plt.title('Comments per City')
-plt.savefig('../figures/cities_ncomments.png')
-plt.show()
-plt.close()
+    STATES_PATH = '../data/reddit_data/states/'
+    CITIES_PATH = '../data/reddit_data/cities/'
+    SUMMARY_DATA_PATH = '../data/reddit_data/reddit_data_summaries.csv'
+    cities = reddit_utils.get_list_of_cities()
+    states = reddit_utils.get_list_of_states()
 
-cities_data = cities_data.sort_values('n_posts',ascending=True)
+    data = []
 
-fig = plt.figure(figsize=(6, 8))
-fig.subplots_adjust(left=0.3)
-ax = fig.add_subplot(111)
-ax.barh(y = cities_data['location'], width = cities_data['n_posts'])
-# ax.set_xticks([0,50000,100000,150000,200000,250000])
-# ax.set_xticklabels(['0','50K','100K','150K','200K','250K'])
-ax.grid()
-plt.title('Posts per City')
-plt.savefig('../figures/cities_nposts.png')
-plt.show()
-plt.close()
+    for city in cities:
+        print(city)
+        comments_path = CITIES_PATH+'/'+city+'/'+city+'_comments.csv'
+        comments_df = pd.read_csv(comments_path)
+        n_comments = len(comments_df)
+        n_comment_authors = len(comments_df.author.unique())
+
+        posts_path = CITIES_PATH+'/'+city+'/'+city+'_posts.csv'
+        posts_df = pd.read_csv(posts_path)
+        n_posts = len(posts_df)
+        n_post_authors = len(posts_df.author.unique())
+        ifcity = 1
+
+        city_data = [city, ifcity, n_comments, n_comment_authors, n_posts, n_post_authors]
+        data.append(city_data)
 
 
-states_data = summary_data[summary_data['city?']==0]
-states_data = states_data.sort_values('n_comments',ascending=True)
-rc('font', **{'family': 'serif', 'serif': ['Computer Modern'], 'size': 12})
-rc('text', usetex=True)
+    for state in states:
+        print(state)
+        comments_path = STATES_PATH+'/'+state+'/'+state+'_comments.csv'
+        comments_df = pd.read_csv(comments_path)
+        n_comments = len(comments_df)
+        n_comment_authors = len(comments_df.author.unique())
 
-fig = plt.figure(figsize=(6, 12))
-fig.subplots_adjust(left=0.3)
-ax = fig.add_subplot(111)
-ax.barh(y = states_data['location'], width = states_data['n_comments'])
-ax.set_xticks([0,20000,40000,60000,80000])
-ax.set_xticklabels(['0','20K','40K','60K','80K'])
-plt.title('Comments per State')
-ax.grid()
-plt.savefig('../figures/states_ncomments.png')
-plt.show()
-plt.close()
+        posts_path = STATES_PATH+'/'+state+'/'+state+'_posts.csv'
+        posts_df = pd.read_csv(posts_path)
+        n_posts = len(posts_df)
+        n_post_authors = len(posts_df.author.unique())
+        ifcity = 0
 
-states_data = states_data.sort_values('n_posts',ascending=True)
+        state_data = [state, ifcity, n_comments, n_comment_authors, n_posts, n_post_authors]
+        data.append(state_data)
 
-fig = plt.figure(figsize=(6, 12))
-fig.subplots_adjust(left=0.3)
-ax = fig.add_subplot(111)
-ax.barh(y = states_data['location'], width = states_data['n_posts'])
-# ax.set_xticks([0,50000,100000,150000,200000,250000])
-# ax.set_xticklabels(['0','50K','100K','150K','200K','250K'])
-plt.title('Posts per State')
-ax.grid()
-plt.savefig('../figures/states_nposts.png')
-plt.show()
-plt.close()
+    summary_data = pd.DataFrame(data, columns = ['location', 'city?', 'n_comments', 'n_comment_authors', 'n_posts', 'n_post_authors'])
+    print(summary_data.head())
+    summary_data.to_csv(SUMMARY_DATA_PATH)
+
+    # summary_data = pd.read_csv(SUMMARY_DATA_PATH)
+
+    summary_barh(df=summary_data,
+                 iscity=True,
+                 col='n_comments',
+                 title='Comments per City',
+                 out='../figures/cities_ncomments.png')
+    summary_barh(df=summary_data,
+                 iscity=True,
+                 col='n_posts',
+                 title='Posts per City',
+                 out='../figures/cities_nposts.png')
+    summary_barh(df=summary_data,
+                 iscity=False,
+                 col='n_comments',
+                 title='Comments per State',
+                 out='../figures/states_ncomments.png')
+    summary_barh(df=summary_data,
+                 iscity=False,
+                 col='n_posts',
+                 title='Posts per State',
+                 out='../figures/states_nposts.png')
+
+
+if __name__ == "__main__":
+    main()
