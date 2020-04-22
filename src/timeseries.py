@@ -22,27 +22,37 @@ def get_relative_freq(word, subreddit, rolling=False):
 
     return word_df
 
-def states_word_freq_tiled(states, word):
+def get_comment_timeseries(subreddit, rolling=False):
+
+    total_df = reddit_utils.utc_to_datetime(pd.DataFrame(pushshift.daycounts(subreddit=subreddit)), 'key')
+
+    if rolling:
+        total_df['rolling_freq'] = total_df['doc_count'].rolling(window=7).mean()
+
+    return total_df
+
+def states_word_freq_tiled(states, counter, word):
     rc('font', **{'family': 'serif', 'serif': ['Computer Modern'], 'size': 14})
     rc('text', usetex=True)
     years_fmt = mdates.DateFormatter('%b\n%Y')
     i = 0
     NUM_ROWS = 6
-    # NUM_ROWS = 5
+    if len(states)%3 != 0:
+        NUM_ROWS = 5
     NUM_COLS = 3
 
     fig, axs = plt.subplots(NUM_ROWS, NUM_COLS, sharex='col', sharey='row', figsize=(16,11))
-    fig.subplots_adjust(hspace=0.3,wspace=0.2,)
+    fig.subplots_adjust(hspace=0.2,wspace=0.15)
     c = -1
     r = 0
 
     d0 = '2019-12-31'
-    d1 = '2020-04-08'
+    d1 = '2020-04-19'
     d1 = datetime.date(int(d1.split('-')[0]), int(d1.split('-')[1]), int(d1.split('-')[2]))
     d0 = datetime.date(int(d0.split('-')[0]), int(d0.split('-')[1]), int(d0.split('-')[2]))
     delta = d1 - d0
     date_list = [d0 + timedelta(days=x) for x in range(0, delta.days, delta.days // 4)]
-    for date in date_list:
+    for date in date_list[1:]:
         newdate = date.replace(day=1)
         date_list[date_list.index(date)] = newdate
 
@@ -71,15 +81,19 @@ def states_word_freq_tiled(states, word):
         axs[r, c].tick_params(axis='both', which='major', labelsize=14)
         axs[r, c].grid()
 
-    # axs[-1, -1].axis('off')
+    if len(states)%3 != 0:
+        axs[-1, -1].axis('off')
 
     for ax in axs.flat:
         ax.xaxis.set_major_formatter(years_fmt)
 
-    plt.savefig('../figures/'+word+'_states3_tiled.png')
-    plt.show()
+    fig.suptitle('Rel. Frequency of \"'+word+'\" on State Subreddits')
 
-def cities_word_freq_tiled(cities, word):
+    plt.savefig('../figures/'+word+'_states'+counter+'_tiled.png')
+    # plt.show()
+    plt.close()
+
+def cities_word_freq_tiled(cities, word, tag):
 
     rc('font', **{'family': 'serif', 'serif': ['Computer Modern'], 'size': 14})
     rc('text', usetex=True)
@@ -89,17 +103,17 @@ def cities_word_freq_tiled(cities, word):
     NUM_COLS = 3
 
     fig, axs = plt.subplots(NUM_ROWS, NUM_COLS, sharex='col', sharey='row', figsize=(16,11))
-    fig.subplots_adjust(hspace=0.3,wspace=0.2,)
+    fig.subplots_adjust(hspace=0.2,wspace=0.15)
     c = -1
     r = 0
 
     d0 = '2019-12-31'
-    d1 = '2020-04-08'
+    d1 = '2020-04-19'
     d1 = datetime.date(int(d1.split('-')[0]), int(d1.split('-')[1]), int(d1.split('-')[2]))
     d0 = datetime.date(int(d0.split('-')[0]), int(d0.split('-')[1]), int(d0.split('-')[2]))
     delta = d1 - d0
     date_list = [d0 + timedelta(days=x) for x in range(0, delta.days, delta.days // 4)]
-    for date in date_list:
+    for date in date_list[1:]:
         newdate = date.replace(day=1)
         date_list[date_list.index(date)] = newdate
 
@@ -131,8 +145,14 @@ def cities_word_freq_tiled(cities, word):
     for ax in axs.flat:
         ax.xaxis.set_major_formatter(years_fmt)
 
-    plt.savefig('../figures/'+word+'_cities_tiled.png')
-    plt.show()
+    fig.suptitle('Rel. Frequency of \"'+word+'\" on City Subreddits')
+
+    if tag:
+        plt.savefig('../figures/'+tag+'_'+word+'_cities_tiled.png')
+    else:
+        plt.savefig('../figures/'+word+'_cities_tiled.png')
+    # plt.show()
+    plt.close()
 
 def states_word_freq(states, word):
 
@@ -143,17 +163,17 @@ def states_word_freq(states, word):
     # i = 0
 
     d0 = '2019-12-30'
-    d1 = '2020-04-08'
+    d1 = '2020-04-19'
     d1 = datetime.date(int(d1.split('-')[0]), int(d1.split('-')[1]), int(d1.split('-')[2]))
     d0 = datetime.date(int(d0.split('-')[0]), int(d0.split('-')[1]), int(d0.split('-')[2]))
 
     delta = d1 - d0
     date_list = [d0 + timedelta(days=x) for x in range(0, delta.days, delta.days // 6)]
-    for date in date_list:
+    for date in date_list[1:]:
         newdate = date.replace(day=1)
         date_list[date_list.index(date)] = newdate
 
-    fig = plt.figure(figsize=(12, 8))
+    fig = plt.figure(figsize=(8, 6))
     fig.subplots_adjust(bottom=0.2)
     ax = fig.add_subplot(111)
     for state in states:
@@ -167,10 +187,10 @@ def states_word_freq(states, word):
     plt.grid()
     plt.title('Rel. Frequency of \"'+word+'\" on State Subreddits')
     plt.savefig('../figures/'+word+'_states_rolling.png')
-    plt.show()
+    # plt.show()
     plt.close()
 
-def ciites_word_freq(cities, word):
+def cities_word_freq(cities, word, tag=None):
 
     rc('font', **{'family': 'serif', 'serif': ['Computer Modern'], 'size': 18})
     rc('text', usetex=True)
@@ -179,17 +199,17 @@ def ciites_word_freq(cities, word):
     i = 0
 
     d0 = '2019-12-30'
-    d1 = '2020-04-08'
+    d1 = '2020-04-19'
     d1 = datetime.date(int(d1.split('-')[0]), int(d1.split('-')[1]), int(d1.split('-')[2]))
     d0 = datetime.date(int(d0.split('-')[0]), int(d0.split('-')[1]), int(d0.split('-')[2]))
 
     delta = d1 - d0
     date_list = [d0 + timedelta(days=x) for x in range(0, delta.days, delta.days // 6)]
-    for date in date_list:
+    for date in date_list[1:]:
         newdate = date.replace(day=1)
         date_list[date_list.index(date)] = newdate
 
-    fig = plt.figure(figsize=(12, 8))
+    fig = plt.figure(figsize=(8, 6))
     fig.subplots_adjust(bottom=0.2)
     ax = fig.add_subplot(111)
     for city in cities:
@@ -202,11 +222,14 @@ def ciites_word_freq(cities, word):
     ax.legend(loc='upper left', ncol=2, fontsize=14, frameon=False)
     plt.grid()
     plt.title('Rel. Frequency of \"'+word+'\" on City Subreddits')
-    plt.savefig('../figures/'+word+'_cities_rolling.png')
-    plt.show()
+    if tag:
+        plt.savefig('../figures/'+tag+'_'+word+'_cities_rolling.png')
+    else:
+        plt.savefig('../figures/'+word+'_cities_rolling.png')
+    # plt.show()
     plt.close()
 
-def states_timeseries(states, word):
+def states_timeseries(states):
 
     rc('font', **{'family': 'serif', 'serif': ['Computer Modern'], 'size': 18})
     rc('text', usetex=True)
@@ -215,34 +238,35 @@ def states_timeseries(states, word):
     # i = 0
 
     d0 = '2019-12-30'
-    d1 = '2020-04-08'
+    d1 = '2020-04-19'
     d1 = datetime.date(int(d1.split('-')[0]), int(d1.split('-')[1]), int(d1.split('-')[2]))
     d0 = datetime.date(int(d0.split('-')[0]), int(d0.split('-')[1]), int(d0.split('-')[2]))
 
     delta = d1 - d0
     date_list = [d0 + timedelta(days=x) for x in range(0, delta.days, delta.days // 6)]
-    for date in date_list:
+    for date in date_list[1:]:
         newdate = date.replace(day=1)
         date_list[date_list.index(date)] = newdate
 
-    fig = plt.figure(figsize=(12, 8))
+    fig = plt.figure(figsize=(8, 6))
     fig.subplots_adjust(bottom=0.2)
     ax = fig.add_subplot(111)
     for state in states:
-        word_df = get_relative_freq('coronavirus',state, rolling=True)
-        ax.plot(word_df['day'], word_df['rolling_freq'], c = 'blue', alpha = 0.4, lw=1.2, label=state)
+        df = get_comment_timeseries(state, rolling=True)
+        df = df[df['day'] >= d0]
+        ax.plot(df['day'], df['rolling_freq'], c = 'blue', alpha = 0.4, lw=1.2, label=state)
         # i += 1
 
     ax.xaxis.set_major_formatter(years_fmt)
     # ax.legend(loc='upper left', ncol=3, fontsize=10, frameon=False)
     ax.set_xticks(date_list)
     plt.grid()
-    plt.title('Rel. Frequency of \"'+word+'\" on State Subreddits')
-    plt.savefig('../figures/'+word+'_states_rolling.png')
-    plt.show()
+    plt.title('Comment Frequency on State Subreddits')
+    plt.savefig('../figures/states_rolling.png')
+    # plt.show()
     plt.close()
 
-def ciites_timeseries(cities, word):
+def cities_timeseries(cities):
 
     rc('font', **{'family': 'serif', 'serif': ['Computer Modern'], 'size': 18})
     rc('text', usetex=True)
@@ -251,44 +275,59 @@ def ciites_timeseries(cities, word):
     i = 0
 
     d0 = '2019-12-30'
-    d1 = '2020-04-08'
+    d1 = '2020-04-19'
     d1 = datetime.date(int(d1.split('-')[0]), int(d1.split('-')[1]), int(d1.split('-')[2]))
     d0 = datetime.date(int(d0.split('-')[0]), int(d0.split('-')[1]), int(d0.split('-')[2]))
 
     delta = d1 - d0
     date_list = [d0 + timedelta(days=x) for x in range(0, delta.days, delta.days // 6)]
-    for date in date_list:
+    for date in date_list[1:]:
         newdate = date.replace(day=1)
         date_list[date_list.index(date)] = newdate
 
-    fig = plt.figure(figsize=(12, 8))
+    fig = plt.figure(figsize=(8, 6))
     fig.subplots_adjust(bottom=0.2)
     ax = fig.add_subplot(111)
     for city in cities:
-        word_df = get_relative_freq('coronavirus',city, rolling=True)
-        ax.plot(word_df['day'], word_df['rolling_freq'], c = colors[i], alpha = 0.7, lw=1.2, label=city)
+        df = get_comment_timeseries(city, rolling=True)
+        df = df[df['day'] >= d0]
+        ax.plot(df['day'], df['rolling_freq'], c = colors[i], alpha = 0.7, lw=1.2, label=city)
         i += 1
 
     ax.xaxis.set_major_formatter(years_fmt)
     ax.set_xticks(date_list)
     ax.legend(loc='upper left', ncol=2, fontsize=14, frameon=False)
     plt.grid()
-    plt.title('Rel. Frequency of \"'+word+'\" on City Subreddits')
-    plt.savefig('../figures/'+word+'_cities_rolling.png')
-    plt.show()
+    plt.title('Comment Frequency on City Subreddits')
+    plt.savefig('../figures/cities_rolling.png')
+    # plt.show()
     plt.close()
 
 def main():
     cities = reddit_utils.get_list_of_cities()
     states = reddit_utils.get_list_of_states()
+    top5 = reddit_utils.get_top5_cities()
     states1 = states[:18]
     states2 = states[18:36]
     states3 = states[36:]
 
     word = "coronavirus"
 
+    # States
     # states_word_freq(states, word)
-    ciites_word_freq(cities, word)
+    # states_word_freq_tiled(states1, '1', word)
+    # states_word_freq_tiled(states2, '2', word)
+    # states_word_freq_tiled(states3, '3', word)
+    # states_timeseries(states)
+
+    # Cities
+    # cities_word_freq(cities, word)
+    # cities_word_freq_tiled(cities, word)
+    # cities_timeseries(cities)
+
+    # Top 5 Cities
+    cities_word_freq(top5, word, 'top5')
+    cities_word_freq_tiled(top5, word, 'top5')
 
 
 if __name__ == "__main__":

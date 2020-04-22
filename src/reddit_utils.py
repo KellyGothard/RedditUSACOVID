@@ -58,7 +58,7 @@ def df_to_bow(df, textcol, stemmer=None):
     Function takes in a dataframe and specified column with desired text.
     For example, if each row in a dataframe was a comment and the column for
     the text was body, you would pass 'body' for textcol.
-    Option is there for a stemmer from sklearn, but not required.
+    Option is there for a stemmer from NLTK, but not required.
     Returns a list of all one-grams from the specified column
     '''
     posts = list(df[textcol])
@@ -70,7 +70,7 @@ def df_to_bow(df, textcol, stemmer=None):
     document = s.lower()
     document = document.split()
     if stemmer:
-        document = [stemmer.lemmatize(word) for word in document]
+        document = [stemmer.stem(word) for word in document]
 
     return document
 
@@ -191,6 +191,10 @@ def get_list_of_states():
               'westvirginia', 'newmexico', 'mississippi', 'kansas', 'northdakota', 'idaho', 'southdakota', 'wyoming',
               'nevada']
     return states
+
+def get_top5_cities():
+   return  ['NYC','LosAngeles','Portland','Chicago','Austin']
+
 
 ########################################################################
 

@@ -23,7 +23,7 @@ def summary_barh(df, iscity, col, title, out):
         rc('font', **{'family': 'serif', 'serif': ['Computer Modern'], 'size': 12})
     rc('text', usetex=True)
 
-    data = data.sort_values('n_comments',ascending=True)
+    data = data.sort_values(col,ascending=True)
     fig = plt.figure(figsize=(6, 8))
     fig.subplots_adjust(left=0.3)
     ax = fig.add_subplot(111)
@@ -37,9 +37,9 @@ def summary_barh(df, iscity, col, title, out):
 
 def main():
 
-    STATES_PATH = '../data/reddit_data/states/'
-    CITIES_PATH = '../data/reddit_data/cities/'
-    SUMMARY_DATA_PATH = '../data/reddit_data/reddit_data_summaries.csv'
+    STATES_PATH = '../data/reddit_data_0418/states/'
+    CITIES_PATH = '../data/reddit_data_0418/cities/'
+    SUMMARY_DATA_PATH = '../data/reddit_data_0418/reddit_data_summaries.csv'
     cities = reddit_utils.get_list_of_cities()
     states = reddit_utils.get_list_of_states()
 
