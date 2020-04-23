@@ -18,3 +18,7 @@ By analyzing comments from each US state’s associated subreddit, andsubreddits
 ### Google COVID-19 Mobility Reports
 
 Scraped from PDF reports and converted to CSV format; sourced from [this project.](https://github.com/vitorbaptista/google-covid19-mobility-reports)
+
+### Apple COVID-19 Mobility Trends
+
+Downloaded from [Apple's reporting center.](https://www.apple.com/covid19/mobility)
